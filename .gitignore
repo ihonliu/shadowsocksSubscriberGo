@@ -1,1 +1,4 @@
 shadowsocksSubscriberGo
+*.sss
+ssConfigs/*
+*.json
