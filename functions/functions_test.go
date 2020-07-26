@@ -11,7 +11,7 @@ func TestDownload(t *testing.T) {
 	config.Conf.SaveResponse = true // test save response
 	var err error
 	err = Download("123")
-	if err != EURLNotValid {
+	if err != ErrURLNotValid {
 		t.Error("return value of download from a non-valid url should be EURLNotValid")
 	}
 	if err = Download("http://ihonliu.xyz"); err != nil {

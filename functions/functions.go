@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/ihonliu/shadowsocksSubscriberGo/config"
 	shadowsocksModels "github.com/ihonliu/shadowsocksSubscriberGo/shadowsocks"
@@ -18,10 +17,11 @@ import (
 // Download will download file from given url
 func Download(url string) error {
 	if !validURL(url) {
-		return EURLNotValid
+		return ErrURLNotValid
 	}
-	ctx, cancFunc := context.WithTimeout(context.Background(), time.Duration(2*time.Second))
-	defer cancFunc()
+	ctx := context.Background()
+	// ctx, cancFunc := context.WithTimeout(context.Background(), time.Duration(10*time.Second))
+	// defer cancFunc()
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
@@ -41,7 +41,12 @@ func Download(url string) error {
 		}
 		ul := decryptSuscription(response)
 		tmpSSArgs := &shadowsocksModels.SSArgs{}
-		path := filepath.Join(filepath.Dir(os.Args[0]), config.Conf.SavePath)
+		// absPath, err := filepath.Abs(os.Args[0])
+		path, err := filepath.Abs(config.Conf.SavePath)
+		if err != nil {
+			return err
+		}
+		// path := filepath.Join(filepath.Dir(absPath), config.Conf.SavePath)
 		fmt.Println(path)
 		os.MkdirAll(path, os.ModePerm)
 		for _, v := range ul {
@@ -77,8 +82,8 @@ func httpDo(ctx context.Context, req *http.Request, f func(*http.Response, error
 	}
 }
 
-func validURL(testUrl string) bool {
+func validURL(testURL string) bool {
 	//ToDo: NEED TO IMPLEMENTED
-	_, err := url.ParseRequestURI(testUrl)
+	_, err := url.ParseRequestURI(testURL)
 	return err == nil
 }
